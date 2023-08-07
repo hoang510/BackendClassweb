@@ -16,15 +16,7 @@ services:
     volumes:
       - db_data:/data/db
     healthcheck:
-      test:
-        [
-          "CMD",
-          "mysqladmin",
-          "ping",
-          "-h",
-          "localhost",
-          "-p=$${cat $$MYSQL_ROOT_PASSWORD_FILE}",
-        ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
       interval: 3s
       retries: 5
       start_period: 30s
