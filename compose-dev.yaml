@@ -1,48 +1,30 @@
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Docker compose reference guide at
-# https://docs.docker.com/compose/compose-file/
-
-# Here the instructions define your application as a service called "server".
-# This service is built from the Dockerfile in the current directory.
-# You can add other services your application may depend on here, such as a
-# database or a cache. For examples, see the Awesome Compose repository:
-# https://github.com/docker/awesome-compose
 services:
-  mysql:
-    image: mysql:latest
-    environment:
-      MYSQL_DATABASE: classweb
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/root-password
-    volumes:
-      - db_data:/data/db
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
-      interval: 3s
-      retries: 5
-      start_period: 30s
-    secrets:
-      - root-password
-    expose:
-      - 3306
-  web:
-    depends_on:
-      mysql:
-        condition: service_healthy
+  server:
     build:
-      context: .
+      context: ./server/
       target: development
     environment:
+      DB_HOST: db
       DB_USER: root
-      DB_HOST: mysql
       DB_NAME: classweb
-      DB_ROOT_PASSWORD_FILE: /run/secrets/root-password
-    ports:
-      - 3000:3000
+      DB_PASSWORD_FILE: /run/secrets/db-password-file
     secrets:
-      - root-password
-volumes:
-  db_data:
-
+      - db-password-file
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db-password-file
+      MYSQL_DATABASE: classweb
+    secrets:
+      - db-password-file
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping"]
+      interval: 3s
+      timeout: 4s
+      retries: 5
 secrets:
-  root-password:
+  db-password-file:
     file: secrets/root-password.txt
