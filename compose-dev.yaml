@@ -21,7 +21,7 @@ services:
     secrets:
       - db-password-file
     healthcheck:
-      test: ["CMD", "healtcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
+      test: ["CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
       interval: 3s
       timeout: 4s
       retries: 5
