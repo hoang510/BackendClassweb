@@ -21,7 +21,7 @@ services:
     secrets:
       - db-password-file
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping"]
+      test: ["CMD", "healtcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
       interval: 3s
       timeout: 4s
       retries: 5
