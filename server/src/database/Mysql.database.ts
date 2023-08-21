@@ -1,14 +1,12 @@
-import { createConnection } from "mysql2";
+import { Connection, createConnection } from "mysql2/promise";
 import { mysql } from "../config/db.keys.js";
 
-const connection = createConnection(mysql);
+var connection: Connection;
+try {
+  connection = await createConnection(mysql);
+} catch (err) {
+  console.warn(err);
+  throw err;
+}
 
-connection.connect((err) => {
-  if (err) {
-    console.warn(err);
-    return;
-  }
-  console.log("Database connection successful!");
-});
-
-export { connection };
+export default connection;

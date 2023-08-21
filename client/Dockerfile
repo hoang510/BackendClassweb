@@ -3,20 +3,20 @@
 ARG NODE_VERSION=18.14.2
 FROM node:${NODE_VERSION}-alpine as development
 
-ENV CI=true PORT=3000
+ENV CI=true
+ENV PORT=3000
 
 WORKDIR /usr/src/app
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
     --mount=type=cache,target=/root/.npm \
-    npm ci 
-
+    npm ci
+    
 COPY . .
-EXPOSE 3000 
-EXPOSE 4000
-CMD ["npm", "start"]
 
-FROM development as builder
+CMD [ "npm", "start" ]
+
+FROM development AS builder
 RUN npm run build
 
 FROM development as dev-envs
@@ -28,4 +28,4 @@ usermod -aG docker vscode
 EOF
 # install Docker tools (cli, buildx, compose)
 COPY --from=gloursdocker/docker / /
-CMD [ "npm", "start:dev" ]
+CMD [ "npm", "start" ]

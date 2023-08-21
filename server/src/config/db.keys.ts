@@ -12,4 +12,6 @@ const mysql: ConnectionOptions = {
     : undefined,
 };
 
+console.log(mysql);
+
 export { mysql };

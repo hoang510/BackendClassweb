@@ -1,8 +1,11 @@
 services:
-  server:
-    build: 
-      context: ./server/
-      target: production
+  server: 
+    build:
+      context: server
+      target: development
+    ports:
+      - 3000:3000
+      - 4000:4000
     environment:
       DB_HOST: db
       DB_USER: root
@@ -21,10 +24,20 @@ services:
     secrets:
       - db-password-file
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping"]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 3s
       timeout: 4s
-      retries: 5
+      retries: 10
+    ports:
+      - 3306:3306
+  client:
+    build:
+      context: client
+      target: development
+    ports:
+      - 5000:3000
+    depends_on:
+      - server
 secrets:
-  db-password-file: 
+  db-password-file:
     file: secrets/root-password.txt
